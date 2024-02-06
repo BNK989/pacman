@@ -3,6 +3,8 @@
 const PACMAN = '😎'
 var gPacman
 var gMoveInterval
+var gLastKeyPressed
+var gMoveIntervalCount = 1
 
 function createPacman(board) {
     gPacman = {
@@ -13,6 +15,19 @@ function createPacman(board) {
         isSuper: false
     }
     board[gPacman.location.i][gPacman.location.j] = PACMAN
+}
+
+function pressedLast(ev) {
+    if (gMoveIntervalCount<1) return
+    clearInterval(gMoveInterval)
+    gLastKeyPressed = ev
+    
+    gMoveInterval = setInterval(()=>{
+        gMoveIntervalCount++
+        onMovePacman(gLastKeyPressed)
+    },500)
+
+    if(gMoveIntervalCount>=1) gMoveIntervalCount = 0
 }
 
 function onMovePacman(ev) {
@@ -50,7 +65,6 @@ function onMovePacman(ev) {
 
     }
 
-
     // model
     gBoard[gPacman.location.i][gPacman.location.j] = EMPTY
     // DOM
@@ -60,10 +74,10 @@ function onMovePacman(ev) {
     gPacman.location = nextLocation
     gBoard[nextLocation.i][nextLocation.j] = PACMAN
     // DOM
-    renderCell(nextLocation, `<img class="pacman ${ev.key}" src="img/pacman.png">`)
+    renderCell(nextLocation, `<img class="pacman ${ev.key}" src="img/pacman3.png">`)
 }
 
-//EXPERIMENTAL - MOVE BY INTERVAL
+//MOVE BY INTERVAL
 
 function nextLocationNew(eventKeyboard){
     const nextLocation = {
@@ -71,34 +85,6 @@ function nextLocationNew(eventKeyboard){
         j: gPacman.location.j
     }
 
-    if(gMoveInterval) clearInterval(gMoveInterval)
-    switch (eventKeyboard) {
-        case 'ArrowUp':
-            nextLocation.i--
-            break
-        case 'ArrowRight':
-            nextLocation.j++
-            break
-        case 'ArrowDown':
-            nextLocation.i++
-            break
-        case 'ArrowLeft':
-            nextLocation.j--
-            break
-    }
-    moveByInterval(eventKeyboard)
-    return nextLocation
-}
-
-function moveByInterval(eventKeyboard){
-    gMoveInterval = setInterval(()=>onMovePacman({key: eventKeyboard}),500)
-}
-
-function getNextLocation(eventKeyboard) {
-    const nextLocation = {
-        i: gPacman.location.i,
-        j: gPacman.location.j
-    }
     switch (eventKeyboard) {
         case 'ArrowUp':
             nextLocation.i--
